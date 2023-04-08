@@ -1,9 +1,12 @@
-import random
 
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 
 from app.data import SHOPS, PRODUCTS
-from app.utils import generate_random_place_in_astana
+from app.utils import (
+    generate_random_place_in_astana,
+    random_int_from_string,
+    random_dict,
+)
 from app.config_reader import config
 from app.db.models import Base, Shop, Product
 
@@ -18,32 +21,28 @@ async def get_session() -> AsyncSession:
 
 async def fill_database() -> None:
     async with async_session() as session:
-        shop_info = SHOPS
-        for name, description in shop_info.items():
-            product_info = PRODUCTS
+        for name, description in SHOPS.items():
             # Выбор случайного элемента из словаря
             # https://picsum.photos/seed/123/1000/1000
-            for _ in range(40):
-                rnd_key = random.choice(list(product_info))
-                random_photo = random.randint(0, 100000)
-                image_url = f"https://picsum.photos/seed/{random_photo}/1000/1000"
-                latitude, longtitude = generate_random_place_in_astana()
-                shop = Shop(
-                    name=name,
-                    description=description,
-                    latitude=latitude,
-                    longitude=longtitude,
-                    products=[
-                        Product(
-                            name=rnd_key,
-                            description=product_info[rnd_key][1],
-                            category=product_info[rnd_key][0],
-                            image_url=image_url
-                        )
-                    ],
-                )
-                await session.merge(shop)
-                await session.commit()
+            latitude, longitude = generate_random_place_in_astana()
+
+            shop = Shop(
+                name=name,
+                description=description,
+                latitude=latitude,
+                longitude=longitude,
+                products=[
+                    Product(
+                        name=name,
+                        category=category,
+                        description=description,
+                        image_url=f"https://picsum.photos/seed/{random_int_from_string(name)}/1000/1000",
+                    )
+                    for name, (category, description) in random_dict(PRODUCTS).items()
+                ],
+            )
+            await session.merge(shop)
+            await session.commit()
 
 
 async def create_tables():

@@ -12,7 +12,7 @@ def generate_random_place_in_astana() -> tuple[float, float]:
     return ASTANA_LATITUDE + latitude_delta, ASTANA_LONGITUDE + longitude_delta
 
 
-def random_dict(source: dict) -> dict:
+def random_dict(source: dict, coefficient: int = 2) -> dict:
     """Returns dict with random elements and random size"""
     # result = {}  # Another implementation
     # for _ in range(random.randint(len(source) // 4, len(source))):
@@ -21,14 +21,14 @@ def random_dict(source: dict) -> dict:
     # return result
     return dict(
         random.sample(
-            source.items(), random.randint(len(source) // 4, len(source))
+            source.items(), random.randint(len(source) // coefficient, len(source))
         )
     )
 
 
-def random_int_from_string(source: str) -> int:
-    """Returns random int from string"""
-    return int("".join(random.sample(source, len(source))))
+def random_int_from_string(source: str, limit: int = 100000) -> int:
+    """Returns fake-random int using string. String can be anything"""
+    return int.from_bytes(source.encode(), "little") % limit
 
 
 if __name__ == "__main__":
