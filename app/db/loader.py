@@ -51,4 +51,4 @@ async def create_tables():
         await conn.run_sync(Base.metadata.drop_all)
         await conn.run_sync(Base.metadata.create_all)
 
-    # await fill_database()
+    await fill_database()
