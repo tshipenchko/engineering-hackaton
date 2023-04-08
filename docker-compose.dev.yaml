@@ -1,0 +1,27 @@
+version: "3.8"
+services:
+  backend:
+    image: python:3.10-bullseye
+    command: python3 -m http.server 8000
+#    ports:
+#      - "8000:8000"
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: EDIT_ME
+      POSTGRES_DB: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    expose:
+      - 5432
+    ports:
+      - "5432:5432"
+
+
+volumes:
+  postgres_data:
