@@ -1,0 +1,37 @@
+version: "3.8"
+services:
+  backend:
+    build: .
+    command: sh -c "uvicorn app:app --host 0.0.0.0"
+    environment:
+      POSTGRES__HOST: postgres
+      POSTGRES__PASSWORD: EDIT_ME
+      POSTGRES__DB: postgres
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: EDIT_ME
+      POSTGRES_DB: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    expose:
+      - 5432
+    ports:
+      - "5432:5432"
+
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $$POSTGRES_DB" ]
+      interval: 1s
+      timeout: 1s
+      retries: 10
+
+
+volumes:
+  postgres_data:
