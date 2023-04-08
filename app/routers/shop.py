@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Response
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -31,4 +31,4 @@ async def get_shop(shop_id: int, session: AsyncSession = Depends(get_session)):
         )
         .unique()
         .all()
-    )
+    ) or Response(status_code=404)
